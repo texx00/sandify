@@ -13,6 +13,9 @@ import ThetaRhoImporter from '../importer/ThetaRhoImporter'
 import GCodeImporter from '../importer/GCodeImporter'
 import './Playlist.scss'
 
+const IMPORT_EXTENSIONS = [".gcode", ".thr", ".nc"]
+const IMPORT_IMAGE_EXTENSIONS = [".png", ".jpg"]
+
 const mapStateToProps = (state, ownProps) => {
   const layer = getCurrentLayer(state)
   const shape = getShape(layer)
@@ -155,7 +158,7 @@ class Playlist extends Component {
     this.setState({showImportGcodeLayer: !this.state.showImportGcodeLayer})
   }
 
-  onFileSelected(event) {
+  onFileSelected(event, toggleVisible = true) {
     let file = event.target.files[0]
     let reader = new FileReader()
 
@@ -171,7 +174,8 @@ class Playlist extends Component {
       }
 
       importer.import(this.onFileImported.bind(this))
-      this.toggleImportGcodeModal.bind(this)();
+      if(toggleVisible)
+        this.toggleImportGcodeModal.bind(this)();
     }
 
     reader.readAsText(file)
@@ -192,7 +196,7 @@ class Playlist extends Component {
     this.setState({showImportImageLayer: !this.state.showImportImageLayer})
   }
 
-  onImageSelected(event){
+  onImageSelected(event, toggleVisible = true){
     let layerProps = {}
     let file = event.target.files[0]                // get the loaded file
     let fr = new FileReader()                       // prepare the file reader to load the image to an url
@@ -220,11 +224,26 @@ class Playlist extends Component {
           variable: 'read' + layerProps.name,
           value: this.endTime - this.startTime      // in milliseconds
         })
-        this.toggleImportImageModal.bind(this)();
+        if(toggleVisible)
+          this.toggleImportImageModal.bind(this)();
       }
       im.src = fr.result                            // set the image from url
     };
     fr.readAsDataURL(file)
+  }
+
+  onDrop(acceptedFiles){
+    for (let item of acceptedFiles){
+      let extension = item.name.split(".").pop()
+      let event = {target: {
+        files: [item]
+      }}
+      if(IMPORT_EXTENSIONS.includes("." + extension)){
+        this.onFileSelected(event, false)
+      }else{
+        this.onImageSelected(event, false)
+      }
+    }
   }
 
   toggleCopyModal() {
@@ -359,7 +378,7 @@ class Playlist extends Component {
                   <Form.Control
                       id="fileUpload"
                       type="file"
-                      accept=".png, .jpg"
+                      accept={IMPORT_IMAGE_EXTENSIONS.toString()}
                       onChange={this.onImageSelected.bind(this)}
                       style={{ display: "none" }} />
                 </Card.Header>
@@ -411,8 +430,8 @@ class Playlist extends Component {
         </Modal>
 
         <div className="p-3">
-          <Dropzone onDrop={acceptedFiles => console.log(acceptedFiles)}
-            accept="image/jpeg, image/png"
+          <Dropzone onDrop={acceptedFiles => this.onDrop(acceptedFiles)}
+            accept={IMPORT_EXTENSIONS.concat(IMPORT_IMAGE_EXTENSIONS).toString()}
             noClick 
             noKeyboard>
               {({getRootProps, getInputProps, isDragActive}) => (
@@ -450,7 +469,7 @@ class Playlist extends Component {
                     <div className={this.getClassName("dropzone-base w-100 h-100 ", isDragActive)}>
                       <div className="vertical-center text-center my-auto">
                         <p>Drop the file here</p>
-                        <p>Supported files are: .thr,.gcode,.nc, .png, .jpg</p>
+                        <p>Supported files are: {IMPORT_EXTENSIONS.concat(IMPORT_IMAGE_EXTENSIONS).join(", ")}</p>
                         <p>Use the import button for additional info</p>
                       </div>
                     </div>
