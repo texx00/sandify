@@ -9,3 +9,34 @@
 .cursor-move {
   cursor: move;
 }
+
+.dropzone-base{
+  position: absolute;
+  z-index: 10;
+  top: 0px;
+  background-color: white;
+  align-items: center;
+  display: table;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  animation: pulse 1.5s infinite;
+  animation-direction: alternate;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: white;
+  }
+  100% {
+    background-color: #A0D4EB;
+  }
+}
+
+.vertical-center{
+  display: table-cell;
+  vertical-align: middle;
+  p {
+    margin: 0;
+  }
+}
+

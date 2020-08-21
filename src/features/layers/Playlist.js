@@ -1,7 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component} from 'react'
 import { connect } from 'react-redux'
 import { Accordion, Button, Card, ListGroup, Modal, Row, Col, Form, Dropdown} from 'react-bootstrap'
 import Select from 'react-select'
+import Dropzone from 'react-dropzone'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { FaTrash, FaEye, FaEyeSlash, FaCopy } from 'react-icons/fa';
 import { getLayerInfo, getCurrentLayer, getNumLayers } from '../layers/selectors'
@@ -240,6 +241,10 @@ class Playlist extends Component {
       this.scrollToBottom()
     }
   }
+  getClassName = (className, isActive) => {
+    if (isActive) return className;
+    return `${className} d-none`;
+  };
 
   render() {
     const selectedShape = getShape({type: this.props.newLayerType})
@@ -406,34 +411,55 @@ class Playlist extends Component {
         </Modal>
 
         <div className="p-3">
-          <h2 className="panel">Layers ({this.props.numLayers})</h2>
-          <SortableList
-            pressDelay={150}
-            layers={this.props.layers}
-            currentLayer={this.props.currentLayer}
-            numLayers={this.props.numLayers}
-            onLayerSelected={this.props.onLayerSelected}
-            onCopyLayer={this.toggleCopyModal.bind(this)}
-            onLayerRemoved={this.props.onLayerRemoved.bind(this)}
-            onSortEnd={this.props.onLayerMoved}
-            onToggleLayerVisible={this.props.onToggleLayerVisible}
-          />
+          <Dropzone onDrop={acceptedFiles => console.log(acceptedFiles)}
+            accept="image/jpeg, image/png"
+            noClick 
+            noKeyboard>
+              {({getRootProps, getInputProps, isDragActive}) => (
+                <section>
+                  <div className="position-relative" {...getRootProps()}>
+                    <input {...getInputProps()} />
+                    <div>
+                      <h2 className="panel">Layers ({this.props.numLayers})</h2>
+                      <SortableList
+                        pressDelay={150}
+                        layers={this.props.layers}
+                        currentLayer={this.props.currentLayer}
+                        numLayers={this.props.numLayers}
+                        onLayerSelected={this.props.onLayerSelected}
+                        onCopyLayer={this.toggleCopyModal.bind(this)}
+                        onLayerRemoved={this.props.onLayerRemoved.bind(this)}
+                        onSortEnd={this.props.onLayerMoved}
+                        onToggleLayerVisible={this.props.onToggleLayerVisible}
+                      />
 
-          <div className="form-inline">
-            <Button className="mt-2 mr-1" variant="outline-primary" size="sm" onClick={this.toggleNewModal.bind(this)}>New</Button>
-            <Dropdown>
-              <Dropdown.Toggle className="mt-2 mr-1" id="file-import-dropdown" variant="outline-primary" size="sm">
-                Import file
-              </Dropdown.Toggle>
-              <Dropdown.Menu size="sm">
-                <Dropdown.Item id="file-import-gcode" onClick={this.toggleImportGcodeModal.bind(this)}>Import gcode file</Dropdown.Item>
-                <Dropdown.Item id="file-import-image" onClick={this.toggleImportImageModal.bind(this)}>Import image file</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
-          
-          <div id="file-canvas-data" className="d-none">
-          </div>
+                      <div className="form-inline">
+                        <Button className="mt-2 mr-1" variant="outline-primary" size="sm" onClick={this.toggleNewModal.bind(this)}>New</Button>
+                        <Dropdown>
+                          <Dropdown.Toggle className="mt-2 mr-1" id="file-import-dropdown" variant="outline-primary" size="sm">
+                            Import file
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu size="sm">
+                            <Dropdown.Item id="file-import-gcode" onClick={this.toggleImportGcodeModal.bind(this)}>Import gcode file</Dropdown.Item>
+                            <Dropdown.Item id="file-import-image" onClick={this.toggleImportImageModal.bind(this)}>Import image file</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+                    </div>
+
+                    <div className={this.getClassName("dropzone-base w-100 h-100 ", isDragActive)}>
+                      <div className="vertical-center text-center my-auto">
+                        <p>Drop the file here</p>
+                        <p>Supported files are: .thr,.gcode,.nc, .png, .jpg</p>
+                        <p>Use the import button for additional info</p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              )}
+          </Dropzone>
+        </div>
+        <div id="file-canvas-data" className="d-none">
         </div>
       </div>
     )
