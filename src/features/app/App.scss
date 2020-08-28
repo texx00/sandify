@@ -101,3 +101,18 @@ h2 {
   -ms-user-select: none; /* IE10+/Edge */
   user-select: none; /* Standard */
 }
+
+.tooltip { 
+  font-family: inherit; 
+} 
+.tooltip-inner { 
+  background-color: #2d6da4; 
+}
+.bs-tooltip-auto .arrow::before,
+.bs-tooltip-bottom[x-placement^=bottom] .arrow::before { 
+  border-bottom-color: #2d6da4;
+}
+.bs-tooltip-auto .arrow::before,
+.bs-tooltip-top[x-placement^=top] .arrow::before { 
+  border-top-color: #2d6da4;
+}

@@ -6,29 +6,38 @@ const options = {
   ...{
     lineSpacing: {
       title: 'Line spacing',
-      min: 0.1
+      min: 0,
+      helperText: 'Distance between the scanning lines'
     },
     darkness: {
       title: 'Darkness threshold',
       min: 1,
-      max: 254
+      max: 254,
+      helperText: 'The color is transformed in grayscale and then compared to the threshold. 255 means light, 1 means dark.'
     },
     inversion: {
       title: 'Invert dark and white',
-      type: 'checkbox'
+      type: 'checkbox',
+      helperText: 'The checkbox inverts the behaviour of the threshold. Uses the line for what is dark instead of light and viceversa.'
     },
     lineType: {
       title: 'Line type',
       type: 'dropdown',
       choices: ['Straight', 'Sine', 'Triangular', 'Spiral', 'Density', 'Squiggle'],
+      helperText: 'Select different type of filling. The "Squiggle" type uses the full color range and ignores the threshold',
+      helperPosition: 'top'
     },
     frequency: {
       title: 'Frequency',
       min:1,
-      max: 200
+      max: 200,
+      helperText: 'Changes the frequency of the lines (not used in the "Straight" line type)',
+      helperPosition: 'top'
     },
     colorDifferenceStep: {
-      title: 'Amplitude'
+      title: 'Amplitude',
+      helperText: 'Changes the amplitude of the waves',
+      helperPosition: 'top'
     },
     canvasId: {
       isVisible: function(){return false}
@@ -46,8 +55,8 @@ export default class BWImage extends Shape {
       ...super.getInitialState(),
       ...{
         type: 'bwimage',
-        lineSpacing: 4,
-        colorDifferenceStep: 4,
+        lineSpacing: 4.0,
+        colorDifferenceStep: 4.0,
         darkness: 254/2,
         inversion: false,
         lineType: "Straight",
